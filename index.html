@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workshop Sessions Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f6fa;
+    }
+
+    header, footer {
+      background-color: #273c75;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #40739e;
+    }
+
+    nav a {
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      background-color: #718093;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .form-container {
+      max-width: 400px;
+      margin: 80px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    form input, form button, form select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    form button {
+      background-color: #273c75;
+      color: white;
+      border: none;
+    }
+
+    form button:hover {
+      background-color: #40739e;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    tr:hover {
+      background-color: #f1f2f6;
+    }
+
+    footer {
+      margin-top: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .dashboard {
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .dashboard h3 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Workshop Sessions Portal</h1>
+  </header>
+
+  <main>
+
+    <!-- LOGIN PAGE (Now first) -->
+    <section id="loginPage" class="form-container">
+      <h2>Login</h2>
+      <form onsubmit="return handleLogin(event)">
+        <label>Email:</label>
+        <input type="email" id="loginEmail" required />
+
+        <label>Password:</label>
+        <input type="password" id="loginPassword" required />
+
+        <button type="submit">Login</button>
+      </form>
+      <p>Don’t have an account? <a href="#" onclick="showSignup()">Sign Up here</a></p>
+    </section>
+
+    <!-- SIGN-UP PAGE (Now second) -->
+    <section id="signupPage" class="form-container hidden">
+      <h2>Sign Up</h2>
+      <form onsubmit="return handleSignup(event)">
+        <label>Username:</label>
+        <input type="text" id="signupUsername" required />
+
+        <label>Email:</label>
+        <input type="email" id="signupEmail" required />
+
+        <label>Password:</label>
+        <input type="password" id="signupPassword" required />
+
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+    </section>
+
+    <!-- REGISTRATION PAGE -->
+    <section id="registrationPage" class="hidden">
+      <nav>
+        <a onclick="showRegistration()">Register</a>
+        <a onclick="showDashboard()">Dashboard</a>
+        <a onclick="logout()">Logout</a>
+      </nav>
+
+      <div class="form-container">
+        <h2>Register for a Subject</h2>
+        <form onsubmit="return handleSubjectRegistration(event)">
+          <label>Select Subject:</label>
+          <select id="subjectSelect" required>
+            <option value="">--Choose a Subject--</option>
+            <option>Web Development - Dr. Anita</option>
+            <option>Data Science Basics - Prof. Ravi</option>
+            <option>Cloud Computing - Dr. Sangeeta</option>
+            <option>Data Network - Dr. Santhi</option>
+            <option>AI and ML - Dr. Kumar</option>
+          </select>
+
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- DASHBOARD PAGE -->
+    <section id="dashboardPage" class="hidden">
+      <nav>
+        <a onclick="showRegistration()">Register</a>
+        <a onclick="showDashboard()">Dashboard</a>
+        <a onclick="logout()">Logout</a>
+      </nav>
+
+      <div class="dashboard">
+        <h3>Your Registered Subjects</h3>
+        <table id="dashboardTable">
+          <thead>
+            <tr>
+              <th>Subject</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Workshop Portal</p>
+  </footer>
+
+  <script>
+    // --- Show/Hide Sections ---
+    function hideAll() {
+      document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
+    }
+
+    function showSignup() {
+      hideAll();
+      document.getElementById("signupPage").classList.remove("hidden");
+    }
+
+    function showLogin() {
+      hideAll();
+      document.getElementById("loginPage").classList.remove("hidden");
+    }
+
+    function showRegistration() {
+      hideAll();
+      document.getElementById("registrationPage").classList.remove("hidden");
+    }
+
+    function showDashboard() {
+      hideAll();
+      document.getElementById("dashboardPage").classList.remove("hidden");
+      loadDashboard();
+    }
+
+    // --- Signup ---
+    function handleSignup(event) {
+      event.preventDefault();
+      const username = document.getElementById("signupUsername").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+
+      localStorage.setItem("user", JSON.stringify({ username, email, password, subjects: [] }));
+      alert("Signup successful! Please log in.");
+      showLogin();
+    }
+
+    // --- Login ---
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (user && user.email === email && user.password === password) {
+        alert("Login successful!");
+        showRegistration();
+      } else {
+        alert("Invalid credentials! Please sign up first.");
+        showSignup();
+      }
+    }
+
+    // --- Subject Registration ---
+    function handleSubjectRegistration(event) {
+      event.preventDefault();
+      const subject = document.getElementById("subjectSelect").value;
+      if (!subject) {
+        alert("Please select a subject!");
+        return;
+      }
+
+      let user = JSON.parse(localStorage.getItem("user"));
+      if (!user.subjects) user.subjects = [];
+
+      if (user.subjects.length >= 5) {
+        alert("You can register only 5 subjects maximum!");
+        return;
+      }
+
+      if (!user.subjects.includes(subject)) {
+        user.subjects.push(subject);
+        localStorage.setItem("user", JSON.stringify(user));
+        alert("Registered successfully for " + subject);
+      } else {
+        alert("Already registered for this subject!");
+      }
+
+      document.getElementById("subjectSelect").value = "";
+      showDashboard();
+    }
+
+    // --- Load Dashboard ---
+    function loadDashboard() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const tbody = document.querySelector("#dashboardTable tbody");
+      tbody.innerHTML = "";
+
+      if (!user.subjects || user.subjects.length === 0) {
+        tbody.innerHTML = "<tr><td>No subjects registered yet.</td></tr>";
+      } else {
+        user.subjects.forEach(sub => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${sub}</td>`;
+          tbody.appendChild(row);
+        });
+      }
+    }
+
+    // --- Logout ---
+    function logout() {
+      alert("You have been logged out.");
+      showLogin();
+    }
+
+    // --- Default Page ---
+    document.addEventListener("DOMContentLoaded", showLogin);
+  </script>
+</body>
+</html>
+
+
